@@ -215,6 +215,55 @@
             cursor: not-allowed;
         }
         
+        /* Sélection du type d'opération */
+        .operation-type-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        
+        .operation-type-btn {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 24px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+        
+        .operation-type-btn:hover {
+            background: var(--border);
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.2);
+        }
+        
+        .operation-type-btn:active {
+            transform: translateY(-2px);
+        }
+        
+        .operation-icon {
+            font-size: 3rem;
+            line-height: 1;
+        }
+        
+        .operation-label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: center;
+            line-height: 1.3;
+        }
+        
+        .btn-link {
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+        
         /* Formulaire */
         .form-group {
             margin-bottom: 20px;
@@ -330,57 +379,6 @@
             font-weight: 700;
             color: var(--accent);
             word-break: break-all;
-        }
-        
-        /* Configuration */
-        .config-section {
-            background: var(--bg-card);
-            border-radius: 12px;
-            margin-top: 20px;
-            border: 1px solid var(--border);
-            overflow: hidden;
-        }
-        
-        .config-header {
-            padding: 16px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background 0.3s ease;
-        }
-        
-        .config-header:hover {
-            background: rgba(255, 255, 255, 0.03);
-        }
-        
-        .config-title {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.9rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        
-        .config-toggle {
-            width: 20px;
-            height: 20px;
-            transition: transform 0.3s ease;
-        }
-        
-        .config-toggle.open {
-            transform: rotate(180deg);
-        }
-        
-        .config-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-        
-        .config-content.open {
-            max-height: 800px;
-            padding: 0 16px 16px 16px;
         }
         
         /* Status indicator */
@@ -544,56 +542,17 @@
             margin-top: 16px;
         }
         
-        .session-info {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 20px;
-        }
-        
-        .session-info-title {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            color: var(--accent);
-            margin-bottom: 12px;
-        }
-        
-        .session-info-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            font-size: 0.9rem;
-        }
-        
-        .session-info-item {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .session-info-label {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-        }
-        
-        .session-info-value {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-        
         /* Responsive */
         @media (max-width: 480px) {
             h1 {
                 font-size: 1.6rem;
             }
             
-            .queue-item-details {
+            .operation-type-grid {
                 grid-template-columns: 1fr;
             }
             
-            .session-info-grid {
+            .queue-item-details {
                 grid-template-columns: 1fr;
             }
         }
@@ -606,22 +565,75 @@
             <p class="subtitle">Scannez plusieurs articles puis envoyez-les tous en une fois</p>
         </header>
         
-        <div class="card">
-            <!-- Information de session -->
-            <div class="session-info">
-                <div class="session-info-title">Informations de session</div>
-                <div class="session-info-grid">
-                    <div class="session-info-item">
-                        <div class="session-info-label">PER ID</div>
-                        <div class="session-info-value" id="sessionPerid">-</div>
-                    </div>
-                    <div class="session-info-item">
-                        <div class="session-info-label">PIT ID</div>
-                        <div class="session-info-value" id="sessionPitid">-</div>
-                    </div>
-                </div>
+        <!-- Sélection du type d'opération -->
+        <div class="card" id="operationTypeSection">
+            <h2 style="font-family: 'Space Mono', monospace; font-size: 1.2rem; color: var(--accent); margin-bottom: 20px; text-align: center;">
+                Type d'opération
+            </h2>
+            
+            <div class="operation-type-grid">
+                <button class="operation-type-btn" data-type="fourniture">
+                    <div class="operation-icon">📦</div>
+                    <div class="operation-label">Fourniture technicien</div>
+                </button>
+                
+                <button class="operation-type-btn" data-type="placement">
+                    <div class="operation-icon">🏗️</div>
+                    <div class="operation-label">Placement chantier</div>
+                </button>
+                
+                <button class="operation-type-btn" data-type="reprise">
+                    <div class="operation-icon">🔄</div>
+                    <div class="operation-label">Reprise chantier</div>
+                </button>
+                
+                <button class="operation-type-btn" data-type="retour">
+                    <div class="operation-icon">⬅️</div>
+                    <div class="operation-label">Retour stock</div>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Formulaire de session (caché par défaut) -->
+        <div class="card" id="sessionFormSection" style="display: none;">
+            <!-- Affichage du type d'opération sélectionné -->
+            <div style="background: var(--bg-card); padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+                <span style="color: var(--text-secondary); font-size: 0.85rem;">Type d'opération :</span>
+                <strong id="selectedOperationType" style="color: var(--accent); font-family: 'Space Mono', monospace; margin-left: 8px;"></strong>
+                <button id="changeOperationBtn" class="btn-link" style="margin-left: 12px; color: var(--accent); background: none; border: none; cursor: pointer; text-decoration: underline; font-size: 0.85rem;">Changer</button>
             </div>
             
+            <!-- Champ PER ID (toujours visible) -->
+            <div class="form-group">
+                <label for="peridInput">PER ID (Technicien)</label>
+                <input type="text" id="peridInput" placeholder="Ex: 12345" required>
+            </div>
+            
+            <!-- Champ PIT ID (visible pour placement et reprise) -->
+            <div class="form-group" id="pitidGroup" style="display: none;">
+                <label for="pitidInput">PIT ID (Projet)</label>
+                <input type="text" id="pitidInput" placeholder="Ex: PIT-2024-001">
+            </div>
+            
+            <!-- Champ Adresse (visible seulement pour reprise) -->
+            <div class="form-group" id="addressGroup" style="display: none;">
+                <label for="addressInput">Adresse de récupération</label>
+                <textarea id="addressInput" placeholder="Adresse où le matériel a été récupéré..." rows="2"></textarea>
+            </div>
+            
+            <!-- Champ Commentaires (optionnel, toujours visible) -->
+            <div class="form-group">
+                <label for="initialCommentsInput">Commentaires initiaux (optionnel)</label>
+                <textarea id="initialCommentsInput" placeholder="Commentaires généraux pour cette session..."></textarea>
+            </div>
+            
+            <button id="startScanningBtn" class="btn btn-primary">
+                ✓ Valider et commencer
+            </button>
+        </div>
+        
+        <!-- Section de scan (cachée au début) -->
+        <div class="card" id="scanningSection" style="display: none;">
             <!-- Zone de scan -->
             <div id="reader"></div>
             
@@ -686,55 +698,37 @@
         
         <!-- Zone de message -->
         <div class="message-zone" id="messageZone"></div>
-        
-        <!-- Configuration -->
-        <div class="config-section">
-            <div class="config-header" id="configHeader">
-                <span class="config-title">⚙️ Configuration</span>
-                <span class="config-toggle" id="configToggle">▼</span>
-            </div>
-            <div class="config-content" id="configContent">
-                <div class="form-group">
-                    <label for="peridInput">PER ID (Technicien)</label>
-                    <input type="text" id="peridInput" placeholder="Ex: 12345">
-                </div>
-                
-                <div class="form-group">
-                    <label for="pitidInput">PIT ID (Projet)</label>
-                    <input type="text" id="pitidInput" placeholder="Ex: PIT-2024-001">
-                </div>
-                
-                <div class="form-group">
-                    <label for="initialCommentsInput">Commentaires initiaux</label>
-                    <textarea id="initialCommentsInput" placeholder="Commentaires généraux pour cette session..."></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="webhookUrl">URL Power Automate Webhook</label>
-                    <input type="url" id="webhookUrl" placeholder="https://prod-xx.westeurope.logic.azure.com:443/workflows/...">
-                </div>
-                
-                <button id="saveConfigBtn" class="btn btn-primary">
-                    Sauvegarder la configuration
-                </button>
-            </div>
-        </div>
     </div>
     
     <script>
+        // ⚙️ CONFIGURATION - Remplacez cette URL par votre webhook Power Automate
+        const WEBHOOK_URL = 'https://prod-xx.westeurope.logic.azure.com:443/workflows/VOTRE_WEBHOOK_ICI';
+        
         // Variables globales
         let html5QrCode;
         let isScanning = false;
         let scannedBarcode = '';
         let itemQueue = []; // File d'attente des articles
+        let operationType = ''; // Type d'opération sélectionné
         
-        const sessionData = {
-            perid: '',
-            pitid: '',
-            initialComments: ''
-        };
+        // Éléments du DOM - Sélection d'opération
+        const operationTypeSection = document.getElementById('operationTypeSection');
+        const sessionFormSection = document.getElementById('sessionFormSection');
+        const scanningSection = document.getElementById('scanningSection');
+        const operationTypeBtns = document.querySelectorAll('.operation-type-btn');
+        const selectedOperationType = document.getElementById('selectedOperationType');
+        const changeOperationBtn = document.getElementById('changeOperationBtn');
+        const startScanningBtn = document.getElementById('startScanningBtn');
         
-        // Éléments du DOM
+        // Éléments du DOM - Formulaire
+        const peridInput = document.getElementById('peridInput');
+        const pitidInput = document.getElementById('pitidInput');
+        const addressInput = document.getElementById('addressInput');
+        const initialCommentsInput = document.getElementById('initialCommentsInput');
+        const pitidGroup = document.getElementById('pitidGroup');
+        const addressGroup = document.getElementById('addressGroup');
+        
+        // Éléments du DOM - Scan
         const scanBtn = document.getElementById('scanBtn');
         const stopBtn = document.getElementById('stopBtn');
         const scanResultZone = document.getElementById('scanResultZone');
@@ -746,46 +740,137 @@
         const cancelBtn = document.getElementById('cancelBtn');
         const messageZone = document.getElementById('messageZone');
         
-        // Nouveaux éléments pour la file d'attente
+        // Éléments du DOM - File d'attente
         const queueSection = document.getElementById('queueSection');
         const queueList = document.getElementById('queueList');
         const queueCount = document.getElementById('queueCount');
         const sendAllBtn = document.getElementById('sendAllBtn');
         const clearQueueBtn = document.getElementById('clearQueueBtn');
         
-        // Configuration
-        const configHeader = document.getElementById('configHeader');
-        const configContent = document.getElementById('configContent');
-        const configToggle = document.getElementById('configToggle');
-        const peridInput = document.getElementById('peridInput');
-        const pitidInput = document.getElementById('pitidInput');
-        const initialCommentsInput = document.getElementById('initialCommentsInput');
-        const webhookUrl = document.getElementById('webhookUrl');
-        const saveConfigBtn = document.getElementById('saveConfigBtn');
+        // ===== GESTION DU TYPE D'OPÉRATION =====
         
-        // Session info display
-        const sessionPerid = document.getElementById('sessionPerid');
-        const sessionPitid = document.getElementById('sessionPitid');
+        // Configuration des champs selon le type d'opération
+        const operationConfig = {
+            fourniture: {
+                label: 'Fourniture technicien',
+                fields: ['perid']
+            },
+            placement: {
+                label: 'Placement chantier',
+                fields: ['perid', 'pitid']
+            },
+            reprise: {
+                label: 'Reprise chantier',
+                fields: ['perid', 'pitid', 'address']
+            },
+            retour: {
+                label: 'Retour stock',
+                fields: ['perid']
+            }
+        };
         
-        // Charger la configuration
+        // Sélection du type d'opération
+        operationTypeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.dataset.type;
+                selectOperationType(type);
+            });
+        });
+        
+        function selectOperationType(type) {
+            operationType = type;
+            const config = operationConfig[type];
+            
+            // Afficher le formulaire de session
+            operationTypeSection.style.display = 'none';
+            sessionFormSection.style.display = 'block';
+            
+            // Mettre à jour le label
+            selectedOperationType.textContent = config.label;
+            
+            // Afficher/masquer les champs selon le type
+            pitidGroup.style.display = config.fields.includes('pitid') ? 'block' : 'none';
+            addressGroup.style.display = config.fields.includes('address') ? 'block' : 'none';
+            
+            // Réinitialiser les champs non nécessaires
+            if (!config.fields.includes('pitid')) pitidInput.value = '';
+            if (!config.fields.includes('address')) addressInput.value = '';
+            
+            // Sauvegarder le type
+            localStorage.setItem('operationType', type);
+        }
+        
+        // Changer de type d'opération
+        changeOperationBtn.addEventListener('click', () => {
+            sessionFormSection.style.display = 'none';
+            operationTypeSection.style.display = 'block';
+            operationType = '';
+        });
+        
+        // Valider et commencer le scan
+        startScanningBtn.addEventListener('click', () => {
+            const config = operationConfig[operationType];
+            
+            // Validation des champs obligatoires
+            if (!peridInput.value.trim()) {
+                showMessage('Veuillez remplir le PER ID', 'error');
+                peridInput.focus();
+                return;
+            }
+            
+            if (config.fields.includes('pitid') && !pitidInput.value.trim()) {
+                showMessage('Veuillez remplir le PIT ID', 'error');
+                pitidInput.focus();
+                return;
+            }
+            
+            if (config.fields.includes('address') && !addressInput.value.trim()) {
+                showMessage('Veuillez remplir l\'adresse de récupération', 'error');
+                addressInput.focus();
+                return;
+            }
+            
+            // Sauvegarder les données
+            saveSessionData();
+            
+            // Afficher la section de scan
+            sessionFormSection.style.display = 'none';
+            scanningSection.style.display = 'block';
+            
+            showMessage('✓ Configuration validée. Vous pouvez commencer à scanner.', 'success');
+        });
+        
+        // ===== FIN GESTION DU TYPE D'OPÉRATION =====
+        
+        // Charger les données sauvegardées
         function loadConfig() {
+            // Charger les valeurs de session depuis localStorage
             const savedPerid = localStorage.getItem('perid') || '';
             const savedPitid = localStorage.getItem('pitid') || '';
+            const savedAddress = localStorage.getItem('address') || '';
             const savedComments = localStorage.getItem('initialComments') || '';
-            const savedWebhook = localStorage.getItem('webhookUrl') || '';
+            const savedOperationType = localStorage.getItem('operationType') || '';
             
             peridInput.value = savedPerid;
             pitidInput.value = savedPitid;
+            addressInput.value = savedAddress;
             initialCommentsInput.value = savedComments;
-            webhookUrl.value = savedWebhook;
             
-            sessionData.perid = savedPerid;
-            sessionData.pitid = savedPitid;
-            sessionData.initialComments = savedComments;
-            
-            // Afficher dans la session info
-            sessionPerid.textContent = savedPerid || '-';
-            sessionPitid.textContent = savedPitid || '-';
+            // Si un type d'opération était sauvegardé, le restaurer
+            if (savedOperationType && operationConfig[savedOperationType]) {
+                selectOperationType(savedOperationType);
+                
+                // Si tous les champs obligatoires sont remplis, aller directement au scan
+                const config = operationConfig[savedOperationType];
+                const hasAllRequired = savedPerid && 
+                    (!config.fields.includes('pitid') || savedPitid) &&
+                    (!config.fields.includes('address') || savedAddress);
+                
+                if (hasAllRequired) {
+                    sessionFormSection.style.display = 'none';
+                    scanningSection.style.display = 'block';
+                }
+            }
             
             // Charger la file d'attente depuis localStorage
             const savedQueue = localStorage.getItem('itemQueue');
@@ -799,44 +884,20 @@
             }
         }
         
-        // Sauvegarder la configuration
-        saveConfigBtn.addEventListener('click', () => {
-            if (!peridInput.value.trim() || !pitidInput.value.trim()) {
-                showMessage('Veuillez remplir le PER ID et le PIT ID', 'error');
-                return;
-            }
-            
-            try {
-                new URL(webhookUrl.value); // Valider l'URL
-                
-                localStorage.setItem('perid', peridInput.value);
-                localStorage.setItem('pitid', pitidInput.value);
-                localStorage.setItem('initialComments', initialCommentsInput.value);
-                localStorage.setItem('webhookUrl', webhookUrl.value);
-                
-                sessionData.perid = peridInput.value;
-                sessionData.pitid = pitidInput.value;
-                sessionData.initialComments = initialCommentsInput.value;
-                
-                // Mettre à jour l'affichage
-                sessionPerid.textContent = peridInput.value;
-                sessionPitid.textContent = pitidInput.value;
-                
-                showMessage('Configuration sauvegardée avec succès!', 'success');
-                
-                // Fermer la section config
-                configContent.classList.remove('open');
-                configToggle.classList.remove('open');
-            } catch (e) {
-                showMessage('URL invalide. Veuillez vérifier le format.', 'error');
-            }
-        });
+        // Sauvegarder les données de session
+        function saveSessionData() {
+            localStorage.setItem('perid', peridInput.value);
+            localStorage.setItem('pitid', pitidInput.value);
+            localStorage.setItem('address', addressInput.value);
+            localStorage.setItem('initialComments', initialCommentsInput.value);
+            localStorage.setItem('operationType', operationType);
+        }
         
-        // Toggle configuration
-        configHeader.addEventListener('click', () => {
-            configContent.classList.toggle('open');
-            configToggle.classList.toggle('open');
-        });
+        // Sauvegarder automatiquement quand on change les champs
+        peridInput.addEventListener('change', saveSessionData);
+        pitidInput.addEventListener('change', saveSessionData);
+        addressInput.addEventListener('change', saveSessionData);
+        initialCommentsInput.addEventListener('change', saveSessionData);
         
         // Afficher un message
         function showMessage(text, type = 'success') {
@@ -1060,12 +1121,20 @@
         
         // Envoyer tous les articles vers SharePoint
         sendAllBtn.addEventListener('click', async () => {
-            const url = webhookUrl.value || localStorage.getItem('webhookUrl');
+            // Vérifier que les champs obligatoires sont remplis
+            if (!peridInput.value.trim()) {
+                showMessage('Veuillez remplir le PER ID', 'error');
+                return;
+            }
             
-            if (!url) {
-                showMessage('Veuillez configurer l\'URL du webhook Power Automate ci-dessous.', 'warning');
-                configContent.classList.add('open');
-                configToggle.classList.add('open');
+            const config = operationConfig[operationType];
+            if (config.fields.includes('pitid') && !pitidInput.value.trim()) {
+                showMessage('Veuillez remplir le PIT ID', 'error');
+                return;
+            }
+            
+            if (config.fields.includes('address') && !addressInput.value.trim()) {
+                showMessage('Veuillez remplir l\'adresse de récupération', 'error');
                 return;
             }
             
@@ -1079,10 +1148,15 @@
             sendAllBtn.innerHTML = '<span class="spinner"></span>Envoi en cours...';
             
             const batchData = {
+                // Type d'opération
+                operationType: operationType,
+                operationLabel: config.label,
+                
                 // Informations de session
-                perid: sessionData.perid,
-                pitid: sessionData.pitid,
-                initialComments: sessionData.initialComments,
+                perid: peridInput.value.trim(),
+                pitid: pitidInput.value.trim() || null,
+                address: addressInput.value.trim() || null,
+                initialComments: initialCommentsInput.value.trim(),
                 
                 // Données des scans
                 items: itemQueue.map(item => ({
@@ -1095,11 +1169,11 @@
                 // Métadonnées
                 batchTimestamp: new Date().toISOString(),
                 totalItems: itemQueue.length,
-                scannedBy: `Technicien ${sessionData.perid}`
+                scannedBy: `Technicien ${peridInput.value.trim()}`
             };
             
             try {
-                const response = await fetch(url, {
+                const response = await fetch(WEBHOOK_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1124,7 +1198,7 @@
                 
             } catch (error) {
                 console.error('Erreur d\'envoi:', error);
-                showMessage('Erreur lors de l\'envoi. Vérifiez votre connexion et l\'URL du webhook.', 'error');
+                showMessage('Erreur lors de l\'envoi. Vérifiez votre connexion et l\'URL du webhook dans le code.', 'error');
                 sendAllBtn.disabled = false;
                 sendAllBtn.innerHTML = '🚀 Tout envoyer à SharePoint';
             }
