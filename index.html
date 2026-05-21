@@ -561,7 +561,7 @@
 <body>
     <div class="container">
         <header>
-            <h1>📦 Scanner la Signalisation</h1>
+            <h1>📦 Scanner la signalisation ACN</h1>
             <p class="subtitle">Scannez plusieurs articles puis envoyez-les tous en une fois</p>
         </header>
         
@@ -1224,23 +1224,23 @@
                 operationType: operationType,
                 operationLabel: config.label,
                 
-                // Informations de session
+                // Informations de session (toujours des strings, jamais null)
                 perid: peridInput.value.trim(),
-                pitid: pitidInput.value.trim() || null,
-                address: addressInput.value.trim() || null,
-                initialComments: initialCommentsInput.value.trim(),
+                pitid: pitidInput.value.trim() || "",
+                address: addressInput.value.trim() || "",
+                initialComments: initialCommentsInput.value.trim() || "",
                 
                 // Données des scans
                 items: itemQueue.map(item => ({
                     barcode: item.barcode,
-                    quantity: item.quantity,
-                    notes: item.notes,
+                    quantity: parseInt(item.quantity), // Forcer en integer
+                    notes: item.notes || "",
                     timestamp: item.timestamp
                 })),
                 
                 // Métadonnées
+                totalItems: parseInt(itemQueue.length),
                 batchTimestamp: new Date().toISOString(),
-                totalItems: itemQueue.length,
                 scannedBy: `Technicien ${peridInput.value.trim()}`
             };
             
@@ -1312,8 +1312,8 @@
                 operationType: "test",
                 operationLabel: "Test de connexion",
                 perid: "TEST",
-                pitid: null,
-                address: null,
+                pitid: "",
+                address: "",
                 initialComments: "Ceci est un test de connexion",
                 items: [
                     {
