@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Scanner SharePoint</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0F172A">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiU2Nhbm5lciBTaGFyZVBvaW50IiwgInNob3J0X25hbWUiOiJTY2FubmVyIiwgImRpc3BsYXkiOiJzdGFuZGFsb25lIiwgImJhY2tncm91bmRfY29sb3IiOiIjMEYxNzJBIiwgInRoZW1lX2NvbG9yIjoiIzBGMTcyQSJ9">
+    
+    <!-- Bibliothèque html5-qrcode pour le scan -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+        
+        :root {
+            --bg-primary: #0F172A;
+            --bg-secondary: #1E293B;
+            --bg-card: #334155;
+            --accent: #10B981;
+            --accent-hover: #059669;
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --border: #475569;
+            --error: #EF4444;
+            --warning: #F59E0B;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Effet de grille en arrière-plan */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px),
+                linear-gradient(rgba(16, 185, 129, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            z-index: 1;
+        }
+        
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px 0;
+            animation: slideDown 0.6s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h1 {
+            font-family: 'Space Mono', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--accent) 0%, #34D399 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+        
+        /* Card principale */
+        .card {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Zone de scan */
+        #reader {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid var(--border);
+            background: var(--bg-card);
+            margin-bottom: 20px;
+        }
+        
+        #reader video {
+            border-radius: 10px;
+        }
+        
+        /* Boutons */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg-primary);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+            margin-top: 12px;
+        }
+        
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--border);
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Formulaire */
+        .form-group {
+            margin-bottom: 20px;
+            animation: fadeInUp 0.6s ease-out 0.4s both;
+        }
+        
+        label {
+            display: block;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 14px;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        /* Résultat du scan */
+        .scan-result {
+            background: var(--bg-card);
+            border-left: 4px solid var(--accent);
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            animation: slideInLeft 0.5s ease-out;
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .scan-result-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        
+        .scan-result-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent);
+            word-break: break-all;
+        }
+        
+        /* Messages */
+        .message {
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            animation: slideInLeft 0.5s ease-out;
+        }
+        
+        .message-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--accent);
+            color: var(--accent);
+        }
+        
+        .message-error {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid var(--error);
+            color: var(--error);
+        }
+        
+        .message-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--warning);
+            color: var(--warning);
+        }
+        
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: var(--bg-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Section configuration */
+        .config-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border);
+            animation: fadeInUp 0.6s ease-out 0.6s both;
+        }
+        
+        .config-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .config-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+        
+        .config-toggle {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .config-toggle.open {
+            transform: rotate(180deg);
+        }
+        
+        .config-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .config-content.open {
+            max-height: 500px;
+        }
+        
+        .help-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            line-height: 1.5;
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+        }
+        
+        /* Status indicator */
+        .status {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .status-ready {
+            background: var(--accent);
+        }
+        
+        .status-scanning {
+            background: var(--warning);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Écran d'identification */
+        .identification-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .identification-header h2 {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+        
+        .identification-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Validation visuelle des inputs */
+        input:valid {
+            border-color: var(--border);
+        }
+        
+        input[pattern]:invalid:not(:placeholder-shown) {
+            border-color: var(--error);
+        }
+        
+        input[pattern]:valid:not(:placeholder-shown) {
+            border-color: var(--accent);
+        }
+        
+        /* Info session */
+        #sessionInfo {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .session-info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .session-info-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent);
+        }
+        
+        .session-info-change {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .session-info-change:hover {
+            color: var(--accent);
+        }
+        
+        .session-info-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 8px 16px;
+        }
+        
+        .session-info-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .session-info-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📦 Scanner SharePoint</h1>
+            <p class="subtitle">Scannez et envoyez directement vers votre liste</p>
+        </header>
+        
+        <div class="card">
+            <!-- Message zone -->
+            <div id="messageZone"></div>
+            
+            <!-- Écran d'identification (visible au démarrage) -->
+            <div id="identificationScreen">
+                <div class="identification-header">
+                    <h2>Identification</h2>
+                    <p class="identification-subtitle">Veuillez renseigner vos informations avant de commencer</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="peridInput">PERID Technicien *</label>
+                    <input type="text" 
+                           id="peridInput" 
+                           placeholder="Ex: 123456"
+                           maxlength="6"
+                           inputmode="numeric"
+                           pattern="[0-9]{6}">
+                    <p class="help-text">Identifiant à 6 chiffres</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="pitidInput">Numéro de PITID *</label>
+                    <input type="text" 
+                           id="pitidInput" 
+                           placeholder="Ex: 1234567"
+                           maxlength="7"
+                           inputmode="numeric"
+                           pattern="[0-9]{7}">
+                    <p class="help-text">Numéro à 7 chiffres</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="initialCommentsInput">Commentaires généraux (optionnel)</label>
+                    <textarea id="initialCommentsInput" 
+                              placeholder="Remarques ou informations complémentaires..."></textarea>
+                </div>
+                
+                <button id="startSessionBtn" class="btn btn-primary">
+                    Continuer vers le scan
+                </button>
+            </div>
+            
+            <!-- Section info session (visible après identification) -->
+            <div id="sessionInfo" style="display: none;"></div>
+            
+            <!-- Scanner (visible après identification) -->
+            <div id="scannerSection" style="display: none;">
+                <div id="reader"></div>
+                
+                <!-- Résultat du scan -->
+                <div id="scanResultZone"></div>
+                
+                <!-- Boutons de contrôle du scanner -->
+                <button id="scanBtn" class="btn btn-primary">
+                    <span class="status status-ready"></span>
+                    Démarrer le scan
+                </button>
+                <button id="stopBtn" class="btn btn-secondary" style="display: none;">
+                    Arrêter le scan
+                </button>
+            </div>
+            
+            <!-- Formulaire de données -->
+            <div id="formSection" style="display: none;">
+                <div class="form-group">
+                    <label for="barcodeInput">Code-barres scanné</label>
+                    <input type="text" id="barcodeInput" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="quantityInput">Quantité</label>
+                    <input type="number" id="quantityInput" min="1" value="1" placeholder="Entrez la quantité">
+                </div>
+                
+                <div class="form-group">
+                    <label for="notesInput">Notes (optionnel)</label>
+                    <textarea id="notesInput" placeholder="Ajoutez des notes supplémentaires..."></textarea>
+                </div>
+                
+                <button id="sendBtn" class="btn btn-primary">
+                    Envoyer vers SharePoint
+                </button>
+                
+                <button id="newScanBtn" class="btn btn-secondary">
+                    Nouveau scan
+                </button>
+            </div>
+            
+            <!-- Configuration -->
+            <div class="config-section">
+                <div class="config-header" id="configHeader">
+                    <span class="config-title">⚙️ Configuration Power Automate</span>
+                    <span class="config-toggle" id="configToggle">▼</span>
+                </div>
+                <div class="config-content" id="configContent">
+                    <div class="form-group">
+                        <label for="webhookUrl">URL du webhook Power Automate</label>
+                        <input type="url" id="webhookUrl" placeholder="https://prod-XX.westeurope.logic.azure.com:443/workflows/...">
+                        <p class="help-text">
+                            Collez ici l'URL HTTP POST générée par votre flux Power Automate
+                        </p>
+                    </div>
+                    
+                    <button id="saveConfigBtn" class="btn btn-primary">
+                        Sauvegarder la configuration
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Variables globales
+        let html5QrCode = null;
+        let isScanning = false;
+        let scannedBarcode = '';
+        
+        // Informations de session
+        let sessionData = {
+            perid: '',
+            pitid: '',
+            initialComments: ''
+        };
+        
+        // Éléments DOM
+        const identificationScreen = document.getElementById('identificationScreen');
+        const scannerSection = document.getElementById('scannerSection');
+        const sessionInfo = document.getElementById('sessionInfo');
+        const startSessionBtn = document.getElementById('startSessionBtn');
+        const peridInput = document.getElementById('peridInput');
+        const pitidInput = document.getElementById('pitidInput');
+        const initialCommentsInput = document.getElementById('initialCommentsInput');
+        const scanBtn = document.getElementById('scanBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const sendBtn = document.getElementById('sendBtn');
+        const newScanBtn = document.getElementById('newScanBtn');
+        const saveConfigBtn = document.getElementById('saveConfigBtn');
+        const formSection = document.getElementById('formSection');
+        const scanResultZone = document.getElementById('scanResultZone');
+        const messageZone = document.getElementById('messageZone');
+        const barcodeInput = document.getElementById('barcodeInput');
+        const quantityInput = document.getElementById('quantityInput');
+        const notesInput = document.getElementById('notesInput');
+        const webhookUrl = document.getElementById('webhookUrl');
+        const configHeader = document.getElementById('configHeader');
+        const configToggle = document.getElementById('configToggle');
+        const configContent = document.getElementById('configContent');
+        
+        // Charger la configuration sauvegardée
+        function loadConfig() {
+            const savedUrl = localStorage.getItem('webhookUrl');
+            if (savedUrl) {
+                webhookUrl.value = savedUrl;
+            }
+            
+            // Charger les données de session si elles existent
+            const savedSession = localStorage.getItem('sessionData');
+            if (savedSession) {
+                try {
+                    sessionData = JSON.parse(savedSession);
+                    if (sessionData.perid && sessionData.pitid) {
+                        showScannerSection();
+                    }
+                } catch (e) {
+                    console.error('Erreur de chargement de session:', e);
+                }
+            }
+        }
+        
+        // Validation du formulaire d'identification
+        function validateIdentification() {
+            const perid = peridInput.value.trim();
+            const pitid = pitidInput.value.trim();
+            
+            if (!perid || perid.length !== 6 || !/^\d{6}$/.test(perid)) {
+                showMessage('Le PERID doit contenir exactement 6 chiffres', 'error');
+                peridInput.focus();
+                return false;
+            }
+            
+            if (!pitid || pitid.length !== 7 || !/^\d{7}$/.test(pitid)) {
+                showMessage('Le PITID doit contenir exactement 7 chiffres', 'error');
+                pitidInput.focus();
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Démarrer la session
+        startSessionBtn.addEventListener('click', () => {
+            if (!validateIdentification()) {
+                return;
+            }
+            
+            sessionData = {
+                perid: peridInput.value.trim(),
+                pitid: pitidInput.value.trim(),
+                initialComments: initialCommentsInput.value.trim()
+            };
+            
+            // Sauvegarder en local storage
+            localStorage.setItem('sessionData', JSON.stringify(sessionData));
+            
+            showScannerSection();
+            showMessage('Session démarrée avec succès!', 'success');
+        });
+        
+        // Afficher la section scanner
+        function showScannerSection() {
+            identificationScreen.style.display = 'none';
+            scannerSection.style.display = 'block';
+            
+            // Afficher les informations de session
+            sessionInfo.style.display = 'block';
+            sessionInfo.innerHTML = `
+                <div class="session-info-header">
+                    <span class="session-info-title">📋 Informations de session</span>
+                    <span class="session-info-change" onclick="changeSession()">Modifier</span>
+                </div>
+                <div class="session-info-grid">
+                    <span class="session-info-label">PERID:</span>
+                    <span class="session-info-value">${sessionData.perid}</span>
+                    <span class="session-info-label">PITID:</span>
+                    <span class="session-info-value">${sessionData.pitid}</span>
+                    ${sessionData.initialComments ? `
+                    <span class="session-info-label">Commentaires:</span>
+                    <span class="session-info-value">${sessionData.initialComments}</span>
+                    ` : ''}
+                </div>
+            `;
+        }
+        
+        // Changer de session
+        function changeSession() {
+            if (confirm('Voulez-vous vraiment changer les informations de session ? Les données actuelles seront perdues.')) {
+                sessionInfo.style.display = 'none';
+                scannerSection.style.display = 'none';
+                identificationScreen.style.display = 'block';
+                
+                // Réinitialiser les champs
+                peridInput.value = sessionData.perid;
+                pitidInput.value = sessionData.pitid;
+                initialCommentsInput.value = sessionData.initialComments;
+                
+                // Arrêter le scan si en cours
+                if (html5QrCode && isScanning) {
+                    html5QrCode.stop();
+                    isScanning = false;
+                }
+                
+                resetForm();
+            }
+        }
+        
+        // Rendre la fonction accessible globalement
+        window.changeSession = changeSession;
+        
+        // Validation en temps réel des champs numériques
+        peridInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '').substring(0, 6);
+        });
+        
+        pitidInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '').substring(0, 7);
+        });
+        
+        // Permettre la soumission avec la touche Entrée
+        pitidInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && validateIdentification()) {
+                startSessionBtn.click();
+            }
+        });
+        
+        peridInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                pitidInput.focus();
+            }
+        });
+        
+        // Sauvegarder la configuration
+        saveConfigBtn.addEventListener('click', () => {
+            if (!webhookUrl.value) {
+                showMessage('Veuillez entrer une URL de webhook', 'error');
+                return;
+            }
+            
+            try {
+                new URL(webhookUrl.value); // Valider l'URL
+                localStorage.setItem('webhookUrl', webhookUrl.value);
+                showMessage('Configuration sauvegardée avec succès!', 'success');
+                
+                // Fermer la section config
+                configContent.classList.remove('open');
+                configToggle.classList.remove('open');
+            } catch (e) {
+                showMessage('URL invalide. Veuillez vérifier le format.', 'error');
+            }
+        });
+        
+        // Toggle configuration
+        configHeader.addEventListener('click', () => {
+            configContent.classList.toggle('open');
+            configToggle.classList.toggle('open');
+        });
+        
+        // Afficher un message
+        function showMessage(text, type = 'success') {
+            const messageClass = `message-${type}`;
+            messageZone.innerHTML = `
+                <div class="message ${messageClass}">
+                    ${text}
+                </div>
+            `;
+            
+            // Auto-effacement après 5 secondes pour les succès
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageZone.innerHTML = '';
+                }, 5000);
+            }
+        }
+        
+        // Démarrer le scan
+        scanBtn.addEventListener('click', async () => {
+            try {
+                html5QrCode = new Html5Qrcode("reader");
+                
+                const config = {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 },
+                    aspectRatio: 1.0,
+                    formatsToSupport: [
+                        Html5QrcodeSupportedFormats.QR_CODE,
+                        Html5QrcodeSupportedFormats.EAN_13,
+                        Html5QrcodeSupportedFormats.EAN_8,
+                        Html5QrcodeSupportedFormats.CODE_128,
+                        Html5QrcodeSupportedFormats.CODE_39,
+                        Html5QrcodeSupportedFormats.UPC_A,
+                        Html5QrcodeSupportedFormats.UPC_E
+                    ]
+                };
+                
+                await html5QrCode.start(
+                    { facingMode: "environment" },
+                    config,
+                    onScanSuccess,
+                    onScanError
+                );
+                
+                isScanning = true;
+                scanBtn.style.display = 'none';
+                stopBtn.style.display = 'block';
+                
+                // Changer le status
+                const statusDot = scanBtn.querySelector('.status');
+                statusDot.classList.remove('status-ready');
+                statusDot.classList.add('status-scanning');
+                
+                showMessage('Scanner activé. Positionnez le code-barres devant la caméra.', 'success');
+                
+            } catch (err) {
+                console.error('Erreur de démarrage:', err);
+                showMessage('Impossible d\'accéder à la caméra. Vérifiez les permissions.', 'error');
+            }
+        });
+        
+        // Arrêter le scan
+        stopBtn.addEventListener('click', async () => {
+            if (html5QrCode && isScanning) {
+                await html5QrCode.stop();
+                isScanning = false;
+                scanBtn.style.display = 'block';
+                stopBtn.style.display = 'none';
+                
+                // Réinitialiser le status
+                const statusDot = scanBtn.querySelector('.status');
+                statusDot.classList.remove('status-scanning');
+                statusDot.classList.add('status-ready');
+            }
+        });
+        
+        // Callback de succès du scan
+        async function onScanSuccess(decodedText, decodedResult) {
+            if (scannedBarcode === decodedText) {
+                return; // Éviter les scans multiples du même code
+            }
+            
+            scannedBarcode = decodedText;
+            
+            // Vibration haptique si disponible
+            if (navigator.vibrate) {
+                navigator.vibrate(200);
+            }
+            
+            // Arrêter le scan
+            if (html5QrCode && isScanning) {
+                await html5QrCode.stop();
+                isScanning = false;
+            }
+            
+            // Afficher le résultat
+            scanResultZone.innerHTML = `
+                <div class="scan-result">
+                    <div class="scan-result-label">Code scanné</div>
+                    <div class="scan-result-value">${decodedText}</div>
+                </div>
+            `;
+            
+            // Remplir le formulaire
+            barcodeInput.value = decodedText;
+            
+            // Afficher le formulaire
+            scanBtn.style.display = 'none';
+            stopBtn.style.display = 'none';
+            formSection.style.display = 'block';
+            
+            showMessage('✓ Code-barres scanné avec succès!', 'success');
+        }
+        
+        // Callback d'erreur du scan
+        function onScanError(errorMessage) {
+            // Ignorer les erreurs de scan normales
+        }
+        
+        // Envoyer vers SharePoint via Power Automate
+        sendBtn.addEventListener('click', async () => {
+            const url = webhookUrl.value || localStorage.getItem('webhookUrl');
+            
+            if (!url) {
+                showMessage('Veuillez configurer l\'URL du webhook Power Automate ci-dessous.', 'warning');
+                configContent.classList.add('open');
+                configToggle.classList.add('open');
+                return;
+            }
+            
+            if (!barcodeInput.value) {
+                showMessage('Aucun code-barres détecté', 'error');
+                return;
+            }
+            
+            // Désactiver le bouton pendant l'envoi
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<span class="spinner"></span>Envoi en cours...';
+            
+            const data = {
+                // Informations de session
+                perid: sessionData.perid,
+                pitid: sessionData.pitid,
+                initialComments: sessionData.initialComments,
+                
+                // Données du scan
+                barcode: barcodeInput.value,
+                quantity: parseInt(quantityInput.value) || 1,
+                notes: notesInput.value || '',
+                
+                // Métadonnées
+                timestamp: new Date().toISOString(),
+                scannedBy: `Technicien ${sessionData.perid}`
+            };
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    showMessage('✓ Données envoyées vers SharePoint avec succès!', 'success');
+                    
+                    // Réinitialiser après 2 secondes
+                    setTimeout(resetForm, 2000);
+                } else {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
+                }
+                
+            } catch (error) {
+                console.error('Erreur d\'envoi:', error);
+                showMessage('Erreur lors de l\'envoi. Vérifiez votre connexion et l\'URL du webhook.', 'error');
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = 'Envoyer vers SharePoint';
+            }
+        });
+        
+        // Nouveau scan
+        newScanBtn.addEventListener('click', () => {
+            resetForm();
+        });
+        
+        // Réinitialiser le formulaire
+        function resetForm() {
+            scannedBarcode = '';
+            barcodeInput.value = '';
+            quantityInput.value = '1';
+            notesInput.value = '';
+            scanResultZone.innerHTML = '';
+            formSection.style.display = 'none';
+            scanBtn.style.display = 'block';
+            stopBtn.style.display = 'none';
+            sendBtn.disabled = false;
+            sendBtn.innerHTML = 'Envoyer vers SharePoint';
+            
+            // Réinitialiser le status
+            const statusDot = scanBtn.querySelector('.status');
+            statusDot.classList.remove('status-scanning');
+            statusDot.classList.add('status-ready');
+        }
+        
+        // Initialisation
+        loadConfig();
+        
+        // PWA: Installation
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
+    </script>
+</body>
+</html>
