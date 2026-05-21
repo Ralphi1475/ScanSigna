@@ -113,6 +113,7 @@
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             border: 1px solid var(--border);
             animation: fadeInUp 0.6s ease-out 0.2s both;
+            margin-bottom: 20px;
         }
         
         @keyframes fadeInUp {
@@ -198,6 +199,17 @@
             transform: translateY(-2px);
         }
         
+        .btn-danger {
+            background: var(--error);
+            color: white;
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-danger:hover:not(:disabled) {
+            background: #DC2626;
+            transform: translateY(-2px);
+        }
+        
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -206,7 +218,6 @@
         /* Formulaire */
         .form-group {
             margin-bottom: 20px;
-            animation: fadeInUp 0.6s ease-out 0.4s both;
         }
         
         label {
@@ -240,20 +251,23 @@
         
         textarea {
             resize: vertical;
-            min-height: 100px;
+            min-height: 80px;
+            font-family: 'IBM Plex Sans', sans-serif;
         }
         
-        /* Résultat du scan */
-        .scan-result {
-            background: var(--bg-card);
-            border-left: 4px solid var(--accent);
+        /* Zone de message */
+        .message-zone {
+            margin-top: 20px;
+        }
+        
+        .message {
             padding: 16px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            animation: slideInLeft 0.5s ease-out;
+            border-radius: 12px;
+            font-weight: 500;
+            animation: slideIn 0.3s ease-out;
         }
         
-        @keyframes slideInLeft {
+        @keyframes slideIn {
             from {
                 opacity: 0;
                 transform: translateX(-20px);
@@ -264,82 +278,80 @@
             }
         }
         
+        .message-success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+        
+        .message-error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid var(--error);
+            color: var(--error);
+        }
+        
+        .message-warning {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid var(--warning);
+            color: var(--warning);
+        }
+        
+        /* Résultat du scan */
+        .scan-result {
+            background: var(--bg-card);
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            animation: pulse 0.5s ease-out;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+        }
+        
         .scan-result-label {
             font-family: 'Space Mono', monospace;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.05em;
             color: var(--text-secondary);
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
         
         .scan-result-value {
             font-family: 'Space Mono', monospace;
-            font-size: 1.1rem;
+            font-size: 1.3rem;
             font-weight: 700;
             color: var(--accent);
             word-break: break-all;
         }
         
-        /* Messages */
-        .message {
-            padding: 16px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            animation: slideInLeft 0.5s ease-out;
-        }
-        
-        .message-success {
-            background: rgba(16, 185, 129, 0.1);
-            border-left: 4px solid var(--accent);
-            color: var(--accent);
-        }
-        
-        .message-error {
-            background: rgba(239, 68, 68, 0.1);
-            border-left: 4px solid var(--error);
-            color: var(--error);
-        }
-        
-        .message-warning {
-            background: rgba(245, 158, 11, 0.1);
-            border-left: 4px solid var(--warning);
-            color: var(--warning);
-        }
-        
-        /* Loading spinner */
-        .spinner {
-            display: inline-block;
-            width: 18px;
-            height: 18px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top-color: var(--bg-primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-right: 10px;
-            vertical-align: middle;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* Section configuration */
+        /* Configuration */
         .config-section {
-            margin-top: 30px;
-            padding-top: 30px;
-            border-top: 1px solid var(--border);
-            animation: fadeInUp 0.6s ease-out 0.6s both;
+            background: var(--bg-card);
+            border-radius: 12px;
+            margin-top: 20px;
+            border: 1px solid var(--border);
+            overflow: hidden;
         }
         
         .config-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
+            padding: 16px;
             cursor: pointer;
-            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+        
+        .config-header:hover {
+            background: rgba(255, 255, 255, 0.03);
         }
         
         .config-title {
@@ -348,11 +360,11 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            color: var(--text-secondary);
         }
         
         .config-toggle {
-            font-size: 1.2rem;
+            width: 20px;
+            height: 20px;
             transition: transform 0.3s ease;
         }
         
@@ -367,140 +379,223 @@
         }
         
         .config-content.open {
-            max-height: 500px;
-        }
-        
-        .help-text {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-top: 6px;
-            line-height: 1.5;
-        }
-        
-        /* Responsive */
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1.5rem;
-            }
-            
-            .container {
-                padding: 15px;
-            }
-            
-            .card {
-                padding: 20px;
-            }
+            max-height: 800px;
+            padding: 0 16px 16px 16px;
         }
         
         /* Status indicator */
         .status {
             display: inline-block;
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
             margin-right: 8px;
-            animation: pulse 2s ease-in-out infinite;
         }
         
         .status-ready {
             background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
         }
         
         .status-scanning {
             background: var(--warning);
+            box-shadow: 0 0 10px var(--warning);
+            animation: blink 1s infinite;
         }
         
-        @keyframes pulse {
+        @keyframes blink {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
         
-        /* Écran d'identification */
-        .identification-header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid var(--border);
+        /* Spinner */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
         }
         
-        .identification-header h2 {
-            font-family: 'Space Mono', monospace;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 8px;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         
-        .identification-subtitle {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
+        /* NOUVEAUX STYLES - File d'attente */
+        .queue-section {
+            margin-top: 20px;
         }
         
-        /* Validation visuelle des inputs */
-        input:valid {
-            border-color: var(--border);
-        }
-        
-        input[pattern]:invalid:not(:placeholder-shown) {
-            border-color: var(--error);
-        }
-        
-        input[pattern]:valid:not(:placeholder-shown) {
-            border-color: var(--accent);
-        }
-        
-        /* Info session */
-        #sessionInfo {
-            background: var(--bg-card);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 20px;
-            border-left: 4px solid var(--accent);
-        }
-        
-        .session-info-header {
+        .queue-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .queue-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .queue-count {
+            background: var(--accent);
+            color: var(--bg-primary);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+        
+        .queue-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .queue-item {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .queue-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
             margin-bottom: 12px;
+        }
+        
+        .queue-item-barcode {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent);
+            word-break: break-all;
+            flex: 1;
+            margin-right: 12px;
+        }
+        
+        .queue-item-remove {
+            background: var(--error);
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .queue-item-remove:hover {
+            background: #DC2626;
+            transform: scale(1.1);
+        }
+        
+        .queue-item-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            font-size: 0.9rem;
+        }
+        
+        .queue-item-detail {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .queue-item-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        
+        .queue-item-value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .queue-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+        
+        .queue-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .session-info {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
         }
         
         .session-info-title {
             font-family: 'Space Mono', monospace;
             font-size: 0.85rem;
-            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
             color: var(--accent);
-        }
-        
-        .session-info-change {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-        
-        .session-info-change:hover {
-            color: var(--accent);
+            margin-bottom: 12px;
         }
         
         .session-info-grid {
             display: grid;
-            grid-template-columns: auto 1fr;
-            gap: 8px 16px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            font-size: 0.9rem;
+        }
+        
+        .session-info-item {
+            display: flex;
+            flex-direction: column;
         }
         
         .session-info-label {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             color: var(--text-secondary);
+            margin-bottom: 4px;
         }
         
         .session-info-value {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.95rem;
-            font-weight: 600;
             color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            .queue-item-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .session-info-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -508,301 +603,225 @@
     <div class="container">
         <header>
             <h1>📦 Scanner SharePoint</h1>
-            <p class="subtitle">Scannez et envoyez directement vers votre liste</p>
+            <p class="subtitle">Scannez plusieurs articles puis envoyez-les tous en une fois</p>
         </header>
         
         <div class="card">
-            <!-- Message zone -->
-            <div id="messageZone"></div>
-            
-            <!-- Écran d'identification (visible au démarrage) -->
-            <div id="identificationScreen">
-                <div class="identification-header">
-                    <h2>Identification</h2>
-                    <p class="identification-subtitle">Veuillez renseigner vos informations avant de commencer</p>
+            <!-- Information de session -->
+            <div class="session-info">
+                <div class="session-info-title">Informations de session</div>
+                <div class="session-info-grid">
+                    <div class="session-info-item">
+                        <div class="session-info-label">PER ID</div>
+                        <div class="session-info-value" id="sessionPerid">-</div>
+                    </div>
+                    <div class="session-info-item">
+                        <div class="session-info-label">PIT ID</div>
+                        <div class="session-info-value" id="sessionPitid">-</div>
+                    </div>
                 </div>
-                
-                <div class="form-group">
-                    <label for="peridInput">PERID Technicien *</label>
-                    <input type="text" 
-                           id="peridInput" 
-                           placeholder="Ex: 123456"
-                           maxlength="6"
-                           inputmode="numeric"
-                           pattern="[0-9]{6}">
-                    <p class="help-text">Identifiant à 6 chiffres</p>
-                </div>
-                
-                <div class="form-group">
-                    <label for="pitidInput">Numéro de PITID *</label>
-                    <input type="text" 
-                           id="pitidInput" 
-                           placeholder="Ex: 1234567"
-                           maxlength="7"
-                           inputmode="numeric"
-                           pattern="[0-9]{7}">
-                    <p class="help-text">Numéro à 7 chiffres</p>
-                </div>
-                
-                <div class="form-group">
-                    <label for="initialCommentsInput">Commentaires généraux (optionnel)</label>
-                    <textarea id="initialCommentsInput" 
-                              placeholder="Remarques ou informations complémentaires..."></textarea>
-                </div>
-                
-                <button id="startSessionBtn" class="btn btn-primary">
-                    Continuer vers le scan
-                </button>
             </div>
             
-            <!-- Section info session (visible après identification) -->
-            <div id="sessionInfo" style="display: none;"></div>
+            <!-- Zone de scan -->
+            <div id="reader"></div>
             
-            <!-- Scanner (visible après identification) -->
-            <div id="scannerSection" style="display: none;">
-                <div id="reader"></div>
-                
-                <!-- Résultat du scan -->
-                <div id="scanResultZone"></div>
-                
-                <!-- Boutons de contrôle du scanner -->
-                <button id="scanBtn" class="btn btn-primary">
-                    <span class="status status-ready"></span>
-                    Démarrer le scan
-                </button>
-                <button id="stopBtn" class="btn btn-secondary" style="display: none;">
-                    Arrêter le scan
-                </button>
-            </div>
+            <button id="scanBtn" class="btn btn-primary">
+                <span class="status status-ready"></span>
+                Démarrer le scan
+            </button>
             
-            <!-- Formulaire de données -->
+            <button id="stopBtn" class="btn btn-danger" style="display: none;">
+                <span class="status status-scanning"></span>
+                Arrêter le scan
+            </button>
+            
+            <!-- Résultat du scan actuel -->
+            <div id="scanResultZone"></div>
+            
+            <!-- Formulaire pour l'article scanné -->
             <div id="formSection" style="display: none;">
                 <div class="form-group">
-                    <label for="barcodeInput">Code-barres scanné</label>
+                    <label for="barcodeInput">Code-barres</label>
                     <input type="text" id="barcodeInput" readonly>
                 </div>
                 
                 <div class="form-group">
                     <label for="quantityInput">Quantité</label>
-                    <input type="number" id="quantityInput" min="1" value="1" placeholder="Entrez la quantité">
+                    <input type="number" id="quantityInput" value="1" min="1">
                 </div>
                 
                 <div class="form-group">
                     <label for="notesInput">Notes (optionnel)</label>
-                    <textarea id="notesInput" placeholder="Ajoutez des notes supplémentaires..."></textarea>
+                    <textarea id="notesInput" placeholder="Ajoutez des commentaires..."></textarea>
                 </div>
                 
-                <button id="sendBtn" class="btn btn-primary">
-                    Envoyer vers SharePoint
+                <button id="addToQueueBtn" class="btn btn-primary">
+                    ➕ Ajouter à la liste
                 </button>
                 
-                <button id="newScanBtn" class="btn btn-secondary">
-                    Nouveau scan
+                <button id="cancelBtn" class="btn btn-secondary">
+                    Annuler
                 </button>
             </div>
+        </div>
+        
+        <!-- File d'attente des articles -->
+        <div class="card queue-section" id="queueSection" style="display: none;">
+            <div class="queue-header">
+                <div class="queue-title">📋 Articles scannés</div>
+                <div class="queue-count" id="queueCount">0</div>
+            </div>
             
-            <!-- Configuration -->
-            <div class="config-section">
-                <div class="config-header" id="configHeader">
-                    <span class="config-title">⚙️ Configuration Power Automate</span>
-                    <span class="config-toggle" id="configToggle">▼</span>
+            <div class="queue-list" id="queueList"></div>
+            
+            <div class="queue-actions">
+                <button id="sendAllBtn" class="btn btn-primary">
+                    🚀 Tout envoyer à SharePoint
+                </button>
+                <button id="clearQueueBtn" class="btn btn-secondary">
+                    🗑️ Vider la liste
+                </button>
+            </div>
+        </div>
+        
+        <!-- Zone de message -->
+        <div class="message-zone" id="messageZone"></div>
+        
+        <!-- Configuration -->
+        <div class="config-section">
+            <div class="config-header" id="configHeader">
+                <span class="config-title">⚙️ Configuration</span>
+                <span class="config-toggle" id="configToggle">▼</span>
+            </div>
+            <div class="config-content" id="configContent">
+                <div class="form-group">
+                    <label for="peridInput">PER ID (Technicien)</label>
+                    <input type="text" id="peridInput" placeholder="Ex: 12345">
                 </div>
-                <div class="config-content" id="configContent">
-                    <div class="form-group">
-                        <label for="webhookUrl">URL du webhook Power Automate</label>
-                        <input type="url" id="webhookUrl" placeholder="https://prod-XX.westeurope.logic.azure.com:443/workflows/...">
-                        <p class="help-text">
-                            Collez ici l'URL HTTP POST générée par votre flux Power Automate
-                        </p>
-                    </div>
-                    
-                    <button id="saveConfigBtn" class="btn btn-primary">
-                        Sauvegarder la configuration
-                    </button>
+                
+                <div class="form-group">
+                    <label for="pitidInput">PIT ID (Projet)</label>
+                    <input type="text" id="pitidInput" placeholder="Ex: PIT-2024-001">
                 </div>
+                
+                <div class="form-group">
+                    <label for="initialCommentsInput">Commentaires initiaux</label>
+                    <textarea id="initialCommentsInput" placeholder="Commentaires généraux pour cette session..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="webhookUrl">URL Power Automate Webhook</label>
+                    <input type="url" id="webhookUrl" placeholder="https://prod-xx.westeurope.logic.azure.com:443/workflows/...">
+                </div>
+                
+                <button id="saveConfigBtn" class="btn btn-primary">
+                    Sauvegarder la configuration
+                </button>
             </div>
         </div>
     </div>
     
     <script>
         // Variables globales
-        let html5QrCode = null;
+        let html5QrCode;
         let isScanning = false;
         let scannedBarcode = '';
+        let itemQueue = []; // File d'attente des articles
         
-        // Informations de session
-        let sessionData = {
+        const sessionData = {
             perid: '',
             pitid: '',
             initialComments: ''
         };
         
-        // Éléments DOM
-        const identificationScreen = document.getElementById('identificationScreen');
-        const scannerSection = document.getElementById('scannerSection');
-        const sessionInfo = document.getElementById('sessionInfo');
-        const startSessionBtn = document.getElementById('startSessionBtn');
-        const peridInput = document.getElementById('peridInput');
-        const pitidInput = document.getElementById('pitidInput');
-        const initialCommentsInput = document.getElementById('initialCommentsInput');
+        // Éléments du DOM
         const scanBtn = document.getElementById('scanBtn');
         const stopBtn = document.getElementById('stopBtn');
-        const sendBtn = document.getElementById('sendBtn');
-        const newScanBtn = document.getElementById('newScanBtn');
-        const saveConfigBtn = document.getElementById('saveConfigBtn');
-        const formSection = document.getElementById('formSection');
         const scanResultZone = document.getElementById('scanResultZone');
-        const messageZone = document.getElementById('messageZone');
+        const formSection = document.getElementById('formSection');
         const barcodeInput = document.getElementById('barcodeInput');
         const quantityInput = document.getElementById('quantityInput');
         const notesInput = document.getElementById('notesInput');
-        const webhookUrl = document.getElementById('webhookUrl');
+        const addToQueueBtn = document.getElementById('addToQueueBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const messageZone = document.getElementById('messageZone');
+        
+        // Nouveaux éléments pour la file d'attente
+        const queueSection = document.getElementById('queueSection');
+        const queueList = document.getElementById('queueList');
+        const queueCount = document.getElementById('queueCount');
+        const sendAllBtn = document.getElementById('sendAllBtn');
+        const clearQueueBtn = document.getElementById('clearQueueBtn');
+        
+        // Configuration
         const configHeader = document.getElementById('configHeader');
-        const configToggle = document.getElementById('configToggle');
         const configContent = document.getElementById('configContent');
+        const configToggle = document.getElementById('configToggle');
+        const peridInput = document.getElementById('peridInput');
+        const pitidInput = document.getElementById('pitidInput');
+        const initialCommentsInput = document.getElementById('initialCommentsInput');
+        const webhookUrl = document.getElementById('webhookUrl');
+        const saveConfigBtn = document.getElementById('saveConfigBtn');
         
-        // Charger la configuration sauvegardée
+        // Session info display
+        const sessionPerid = document.getElementById('sessionPerid');
+        const sessionPitid = document.getElementById('sessionPitid');
+        
+        // Charger la configuration
         function loadConfig() {
-            const savedUrl = localStorage.getItem('webhookUrl');
-            if (savedUrl) {
-                webhookUrl.value = savedUrl;
-            }
+            const savedPerid = localStorage.getItem('perid') || '';
+            const savedPitid = localStorage.getItem('pitid') || '';
+            const savedComments = localStorage.getItem('initialComments') || '';
+            const savedWebhook = localStorage.getItem('webhookUrl') || '';
             
-            // Charger les données de session si elles existent
-            const savedSession = localStorage.getItem('sessionData');
-            if (savedSession) {
+            peridInput.value = savedPerid;
+            pitidInput.value = savedPitid;
+            initialCommentsInput.value = savedComments;
+            webhookUrl.value = savedWebhook;
+            
+            sessionData.perid = savedPerid;
+            sessionData.pitid = savedPitid;
+            sessionData.initialComments = savedComments;
+            
+            // Afficher dans la session info
+            sessionPerid.textContent = savedPerid || '-';
+            sessionPitid.textContent = savedPitid || '-';
+            
+            // Charger la file d'attente depuis localStorage
+            const savedQueue = localStorage.getItem('itemQueue');
+            if (savedQueue) {
                 try {
-                    sessionData = JSON.parse(savedSession);
-                    if (sessionData.perid && sessionData.pitid) {
-                        showScannerSection();
-                    }
+                    itemQueue = JSON.parse(savedQueue);
+                    updateQueueDisplay();
                 } catch (e) {
-                    console.error('Erreur de chargement de session:', e);
+                    console.error('Erreur lors du chargement de la file d\'attente:', e);
                 }
             }
         }
-        
-        // Validation du formulaire d'identification
-        function validateIdentification() {
-            const perid = peridInput.value.trim();
-            const pitid = pitidInput.value.trim();
-            
-            if (!perid || perid.length !== 6 || !/^\d{6}$/.test(perid)) {
-                showMessage('Le PERID doit contenir exactement 6 chiffres', 'error');
-                peridInput.focus();
-                return false;
-            }
-            
-            if (!pitid || pitid.length !== 7 || !/^\d{7}$/.test(pitid)) {
-                showMessage('Le PITID doit contenir exactement 7 chiffres', 'error');
-                pitidInput.focus();
-                return false;
-            }
-            
-            return true;
-        }
-        
-        // Démarrer la session
-        startSessionBtn.addEventListener('click', () => {
-            if (!validateIdentification()) {
-                return;
-            }
-            
-            sessionData = {
-                perid: peridInput.value.trim(),
-                pitid: pitidInput.value.trim(),
-                initialComments: initialCommentsInput.value.trim()
-            };
-            
-            // Sauvegarder en local storage
-            localStorage.setItem('sessionData', JSON.stringify(sessionData));
-            
-            showScannerSection();
-            showMessage('Session démarrée avec succès!', 'success');
-        });
-        
-        // Afficher la section scanner
-        function showScannerSection() {
-            identificationScreen.style.display = 'none';
-            scannerSection.style.display = 'block';
-            
-            // Afficher les informations de session
-            sessionInfo.style.display = 'block';
-            sessionInfo.innerHTML = `
-                <div class="session-info-header">
-                    <span class="session-info-title">📋 Informations de session</span>
-                    <span class="session-info-change" onclick="changeSession()">Modifier</span>
-                </div>
-                <div class="session-info-grid">
-                    <span class="session-info-label">PERID:</span>
-                    <span class="session-info-value">${sessionData.perid}</span>
-                    <span class="session-info-label">PITID:</span>
-                    <span class="session-info-value">${sessionData.pitid}</span>
-                    ${sessionData.initialComments ? `
-                    <span class="session-info-label">Commentaires:</span>
-                    <span class="session-info-value">${sessionData.initialComments}</span>
-                    ` : ''}
-                </div>
-            `;
-        }
-        
-        // Changer de session
-        function changeSession() {
-            if (confirm('Voulez-vous vraiment changer les informations de session ? Les données actuelles seront perdues.')) {
-                sessionInfo.style.display = 'none';
-                scannerSection.style.display = 'none';
-                identificationScreen.style.display = 'block';
-                
-                // Réinitialiser les champs
-                peridInput.value = sessionData.perid;
-                pitidInput.value = sessionData.pitid;
-                initialCommentsInput.value = sessionData.initialComments;
-                
-                // Arrêter le scan si en cours
-                if (html5QrCode && isScanning) {
-                    html5QrCode.stop();
-                    isScanning = false;
-                }
-                
-                resetForm();
-            }
-        }
-        
-        // Rendre la fonction accessible globalement
-        window.changeSession = changeSession;
-        
-        // Validation en temps réel des champs numériques
-        peridInput.addEventListener('input', function(e) {
-            this.value = this.value.replace(/[^0-9]/g, '').substring(0, 6);
-        });
-        
-        pitidInput.addEventListener('input', function(e) {
-            this.value = this.value.replace(/[^0-9]/g, '').substring(0, 7);
-        });
-        
-        // Permettre la soumission avec la touche Entrée
-        pitidInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && validateIdentification()) {
-                startSessionBtn.click();
-            }
-        });
-        
-        peridInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                pitidInput.focus();
-            }
-        });
         
         // Sauvegarder la configuration
         saveConfigBtn.addEventListener('click', () => {
-            if (!webhookUrl.value) {
-                showMessage('Veuillez entrer une URL de webhook', 'error');
+            if (!peridInput.value.trim() || !pitidInput.value.trim()) {
+                showMessage('Veuillez remplir le PER ID et le PIT ID', 'error');
                 return;
             }
             
             try {
                 new URL(webhookUrl.value); // Valider l'URL
+                
+                localStorage.setItem('perid', peridInput.value);
+                localStorage.setItem('pitid', pitidInput.value);
+                localStorage.setItem('initialComments', initialCommentsInput.value);
                 localStorage.setItem('webhookUrl', webhookUrl.value);
+                
+                sessionData.perid = peridInput.value;
+                sessionData.pitid = pitidInput.value;
+                sessionData.initialComments = initialCommentsInput.value;
+                
+                // Mettre à jour l'affichage
+                sessionPerid.textContent = peridInput.value;
+                sessionPitid.textContent = pitidInput.value;
+                
                 showMessage('Configuration sauvegardée avec succès!', 'success');
                 
                 // Fermer la section config
@@ -882,6 +901,10 @@
         
         // Arrêter le scan
         stopBtn.addEventListener('click', async () => {
+            await stopScanning();
+        });
+        
+        async function stopScanning() {
             if (html5QrCode && isScanning) {
                 await html5QrCode.stop();
                 isScanning = false;
@@ -893,7 +916,7 @@
                 statusDot.classList.remove('status-scanning');
                 statusDot.classList.add('status-ready');
             }
-        });
+        }
         
         // Callback de succès du scan
         async function onScanSuccess(decodedText, decodedResult) {
@@ -908,11 +931,7 @@
                 navigator.vibrate(200);
             }
             
-            // Arrêter le scan
-            if (html5QrCode && isScanning) {
-                await html5QrCode.stop();
-                isScanning = false;
-            }
+            // NE PAS arrêter le scan - on continue pour scanner le suivant
             
             // Afficher le résultat
             scanResultZone.innerHTML = `
@@ -924,13 +943,13 @@
             
             // Remplir le formulaire
             barcodeInput.value = decodedText;
+            quantityInput.value = '1';
+            notesInput.value = '';
             
             // Afficher le formulaire
-            scanBtn.style.display = 'none';
-            stopBtn.style.display = 'none';
             formSection.style.display = 'block';
             
-            showMessage('✓ Code-barres scanné avec succès!', 'success');
+            showMessage('✓ Code-barres scanné! Ajoutez-le à la liste ou scannez le suivant.', 'success');
         }
         
         // Callback d'erreur du scan
@@ -938,8 +957,109 @@
             // Ignorer les erreurs de scan normales
         }
         
-        // Envoyer vers SharePoint via Power Automate
-        sendBtn.addEventListener('click', async () => {
+        // Ajouter à la file d'attente
+        addToQueueBtn.addEventListener('click', () => {
+            if (!barcodeInput.value) {
+                showMessage('Aucun code-barres détecté', 'error');
+                return;
+            }
+            
+            const item = {
+                id: Date.now(),
+                barcode: barcodeInput.value,
+                quantity: parseInt(quantityInput.value) || 1,
+                notes: notesInput.value || '',
+                timestamp: new Date().toISOString()
+            };
+            
+            itemQueue.push(item);
+            saveQueue();
+            updateQueueDisplay();
+            
+            // Réinitialiser le formulaire mais garder le scan actif
+            scannedBarcode = '';
+            barcodeInput.value = '';
+            quantityInput.value = '1';
+            notesInput.value = '';
+            scanResultZone.innerHTML = '';
+            formSection.style.display = 'none';
+            
+            showMessage(`✓ Article ajouté! Total: ${itemQueue.length} article(s)`, 'success');
+        });
+        
+        // Annuler l'ajout
+        cancelBtn.addEventListener('click', () => {
+            scannedBarcode = '';
+            barcodeInput.value = '';
+            quantityInput.value = '1';
+            notesInput.value = '';
+            scanResultZone.innerHTML = '';
+            formSection.style.display = 'none';
+        });
+        
+        // Sauvegarder la file d'attente
+        function saveQueue() {
+            localStorage.setItem('itemQueue', JSON.stringify(itemQueue));
+        }
+        
+        // Mettre à jour l'affichage de la file d'attente
+        function updateQueueDisplay() {
+            queueCount.textContent = itemQueue.length;
+            
+            if (itemQueue.length === 0) {
+                queueSection.style.display = 'none';
+                queueList.innerHTML = '<div class="queue-empty">Aucun article dans la liste</div>';
+                return;
+            }
+            
+            queueSection.style.display = 'block';
+            
+            queueList.innerHTML = itemQueue.map(item => `
+                <div class="queue-item">
+                    <div class="queue-item-header">
+                        <div class="queue-item-barcode">${item.barcode}</div>
+                        <button class="queue-item-remove" onclick="removeFromQueue(${item.id})">×</button>
+                    </div>
+                    <div class="queue-item-details">
+                        <div class="queue-item-detail">
+                            <div class="queue-item-label">Quantité</div>
+                            <div class="queue-item-value">${item.quantity}</div>
+                        </div>
+                        <div class="queue-item-detail">
+                            <div class="queue-item-label">Horodatage</div>
+                            <div class="queue-item-value">${new Date(item.timestamp).toLocaleTimeString('fr-FR')}</div>
+                        </div>
+                        ${item.notes ? `
+                        <div class="queue-item-detail" style="grid-column: 1 / -1;">
+                            <div class="queue-item-label">Notes</div>
+                            <div class="queue-item-value">${item.notes}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Supprimer un article de la file d'attente
+        window.removeFromQueue = function(id) {
+            itemQueue = itemQueue.filter(item => item.id !== id);
+            saveQueue();
+            updateQueueDisplay();
+            showMessage('Article supprimé de la liste', 'success');
+        };
+        
+        // Vider la file d'attente
+        clearQueueBtn.addEventListener('click', () => {
+            if (confirm(`Êtes-vous sûr de vouloir supprimer les ${itemQueue.length} article(s) ?`)) {
+                itemQueue = [];
+                saveQueue();
+                updateQueueDisplay();
+                showMessage('Liste vidée', 'success');
+            }
+        });
+        
+        // Envoyer tous les articles vers SharePoint
+        sendAllBtn.addEventListener('click', async () => {
             const url = webhookUrl.value || localStorage.getItem('webhookUrl');
             
             if (!url) {
@@ -949,28 +1069,32 @@
                 return;
             }
             
-            if (!barcodeInput.value) {
-                showMessage('Aucun code-barres détecté', 'error');
+            if (itemQueue.length === 0) {
+                showMessage('Aucun article à envoyer', 'error');
                 return;
             }
             
             // Désactiver le bouton pendant l'envoi
-            sendBtn.disabled = true;
-            sendBtn.innerHTML = '<span class="spinner"></span>Envoi en cours...';
+            sendAllBtn.disabled = true;
+            sendAllBtn.innerHTML = '<span class="spinner"></span>Envoi en cours...';
             
-            const data = {
+            const batchData = {
                 // Informations de session
                 perid: sessionData.perid,
                 pitid: sessionData.pitid,
                 initialComments: sessionData.initialComments,
                 
-                // Données du scan
-                barcode: barcodeInput.value,
-                quantity: parseInt(quantityInput.value) || 1,
-                notes: notesInput.value || '',
+                // Données des scans
+                items: itemQueue.map(item => ({
+                    barcode: item.barcode,
+                    quantity: item.quantity,
+                    notes: item.notes,
+                    timestamp: item.timestamp
+                })),
                 
                 // Métadonnées
-                timestamp: new Date().toISOString(),
+                batchTimestamp: new Date().toISOString(),
+                totalItems: itemQueue.length,
                 scannedBy: `Technicien ${sessionData.perid}`
             };
             
@@ -980,14 +1104,20 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(batchData)
                 });
                 
                 if (response.ok) {
-                    showMessage('✓ Données envoyées vers SharePoint avec succès!', 'success');
+                    showMessage(`✓ ${itemQueue.length} article(s) envoyé(s) vers SharePoint avec succès!`, 'success');
                     
-                    // Réinitialiser après 2 secondes
-                    setTimeout(resetForm, 2000);
+                    // Vider la file d'attente après envoi réussi
+                    itemQueue = [];
+                    saveQueue();
+                    updateQueueDisplay();
+                    
+                    // Réactiver le bouton
+                    sendAllBtn.disabled = false;
+                    sendAllBtn.innerHTML = '🚀 Tout envoyer à SharePoint';
                 } else {
                     throw new Error(`Erreur HTTP: ${response.status}`);
                 }
@@ -995,34 +1125,10 @@
             } catch (error) {
                 console.error('Erreur d\'envoi:', error);
                 showMessage('Erreur lors de l\'envoi. Vérifiez votre connexion et l\'URL du webhook.', 'error');
-                sendBtn.disabled = false;
-                sendBtn.innerHTML = 'Envoyer vers SharePoint';
+                sendAllBtn.disabled = false;
+                sendAllBtn.innerHTML = '🚀 Tout envoyer à SharePoint';
             }
         });
-        
-        // Nouveau scan
-        newScanBtn.addEventListener('click', () => {
-            resetForm();
-        });
-        
-        // Réinitialiser le formulaire
-        function resetForm() {
-            scannedBarcode = '';
-            barcodeInput.value = '';
-            quantityInput.value = '1';
-            notesInput.value = '';
-            scanResultZone.innerHTML = '';
-            formSection.style.display = 'none';
-            scanBtn.style.display = 'block';
-            stopBtn.style.display = 'none';
-            sendBtn.disabled = false;
-            sendBtn.innerHTML = 'Envoyer vers SharePoint';
-            
-            // Réinitialiser le status
-            const statusDot = scanBtn.querySelector('.status');
-            statusDot.classList.remove('status-scanning');
-            statusDot.classList.add('status-ready');
-        }
         
         // Initialisation
         loadConfig();
