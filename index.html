@@ -561,7 +561,7 @@
 <body>
     <div class="container">
         <header>
-            <h1>📦 Scanner Signalisation</h1>
+            <h1>📦 Scanner la Signalisation</h1>
             <p class="subtitle">Scannez plusieurs articles puis envoyez-les tous en une fois</p>
         </header>
         
@@ -701,6 +701,10 @@
                     🗑️ Vider la liste
                 </button>
             </div>
+            
+            <button id="testConnectionBtn" class="btn btn-secondary" style="margin-top: 12px; font-size: 0.85rem;">
+                🔌 Tester la connexion Power Automate
+            </button>
         </div>
         
         <!-- Zone de message -->
@@ -754,6 +758,7 @@
         const queueCount = document.getElementById('queueCount');
         const sendAllBtn = document.getElementById('sendAllBtn');
         const clearQueueBtn = document.getElementById('clearQueueBtn');
+        const testConnectionBtn = document.getElementById('testConnectionBtn');
         
         // ===== GESTION DU TYPE D'OPÉRATION =====
         
@@ -1248,6 +1253,14 @@
                     body: JSON.stringify(batchData)
                 });
                 
+                // Lire la réponse
+                let responseData;
+                try {
+                    responseData = await response.json();
+                } catch (e) {
+                    responseData = await response.text();
+                }
+                
                 if (response.ok) {
                     showMessage(`✓ ${itemQueue.length} article(s) envoyé(s) vers SharePoint avec succès!`, 'success');
                     
@@ -1260,14 +1273,110 @@
                     sendAllBtn.disabled = false;
                     sendAllBtn.innerHTML = '🚀 Tout envoyer à SharePoint';
                 } else {
-                    throw new Error(`Erreur HTTP: ${response.status}`);
+                    // Afficher l'erreur détaillée
+                    const errorMsg = responseData.error ? 
+                        `${responseData.error.code}: ${responseData.error.message}` : 
+                        JSON.stringify(responseData);
+                    throw new Error(`Erreur HTTP ${response.status}: ${errorMsg}`);
                 }
                 
             } catch (error) {
-                console.error('Erreur d\'envoi:', error);
-                showMessage('Erreur lors de l\'envoi. Vérifiez votre connexion et l\'URL du webhook dans le code.', 'error');
+                console.error('Erreur d\'envoi complète:', error);
+                
+                // Message d'erreur détaillé
+                let errorMessage = 'Erreur lors de l\'envoi.\n\n';
+                
+                if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                    errorMessage += '❌ Erreur CORS détectée.\n\n';
+                    errorMessage += 'Solutions possibles:\n';
+                    errorMessage += '1. Vérifiez que le workflow Power Automate est activé\n';
+                    errorMessage += '2. Vérifiez que l\'authentification est sur "N\'importe qui"\n';
+                    errorMessage += '3. Essayez de désactiver/réactiver le workflow\n\n';
+                    errorMessage += 'Détails technique: ' + error.message;
+                } else {
+                    errorMessage += '📄 Détails: ' + error.message;
+                }
+                
+                showMessage(errorMessage, 'error');
                 sendAllBtn.disabled = false;
                 sendAllBtn.innerHTML = '🚀 Tout envoyer à SharePoint';
+            }
+        });
+        
+        // Tester la connexion Power Automate
+        testConnectionBtn.addEventListener('click', async () => {
+            testConnectionBtn.disabled = true;
+            testConnectionBtn.innerHTML = '<span class="spinner"></span>Test en cours...';
+            
+            const testData = {
+                operationType: "test",
+                operationLabel: "Test de connexion",
+                perid: "TEST",
+                pitid: null,
+                address: null,
+                initialComments: "Ceci est un test de connexion",
+                items: [
+                    {
+                        barcode: "TEST123",
+                        quantity: 1,
+                        notes: "Article de test",
+                        timestamp: new Date().toISOString()
+                    }
+                ],
+                totalItems: 1,
+                batchTimestamp: new Date().toISOString(),
+                scannedBy: "Test"
+            };
+            
+            try {
+                console.log('Envoi de la requête de test...');
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                console.log('Réponse reçue:', response.status, response.statusText);
+                
+                let responseData;
+                try {
+                    responseData = await response.json();
+                } catch (e) {
+                    responseData = await response.text();
+                }
+                
+                console.log('Données de réponse:', responseData);
+                
+                if (response.ok) {
+                    showMessage('✅ Test réussi ! La connexion à Power Automate fonctionne.', 'success');
+                } else {
+                    const errorMsg = responseData.error ? 
+                        `${responseData.error.code}: ${responseData.error.message}` : 
+                        JSON.stringify(responseData);
+                    showMessage(`❌ Test échoué (${response.status}): ${errorMsg}`, 'error');
+                }
+                
+            } catch (error) {
+                console.error('Erreur complète:', error);
+                
+                if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                    showMessage(
+                        '❌ Erreur CORS détectée.\n\n' +
+                        'Le navigateur bloque la requête. Vérifiez que:\n' +
+                        '1. Le workflow est activé\n' +
+                        '2. L\'authentification est sur "N\'importe qui"\n' +
+                        '3. L\'URL est correcte\n\n' +
+                        'Consultez la console (F12) pour plus de détails.',
+                        'error'
+                    );
+                } else {
+                    showMessage(`❌ Erreur: ${error.message}`, 'error');
+                }
+            } finally {
+                testConnectionBtn.disabled = false;
+                testConnectionBtn.innerHTML = '🔌 Tester la connexion Power Automate';
             }
         });
         
