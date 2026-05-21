@@ -561,7 +561,7 @@
 <body>
     <div class="container">
         <header>
-            <h1>📦 Scanner SharePoint</h1>
+            <h1>📦 Scanner Signalisation</h1>
             <p class="subtitle">Scannez plusieurs articles puis envoyez-les tous en une fois</p>
         </header>
         
@@ -634,6 +634,13 @@
         
         <!-- Section de scan (cachée au début) -->
         <div class="card" id="scanningSection" style="display: none;">
+            <!-- Bouton de réinitialisation -->
+            <div style="text-align: center; margin-bottom: 16px;">
+                <button id="resetBtn" class="btn btn-secondary" style="max-width: 300px;">
+                    🔄 Recommencer (nouvelle opération)
+                </button>
+            </div>
+            
             <!-- Zone de scan -->
             <div id="reader"></div>
             
@@ -701,7 +708,7 @@
     </div>
     
     <script>
-        // ⚙️ CONFIGURATION - Remplacez cette URL par votre webhook Power Automate
+        // ⚙️ CONFIGURATION - URL du webhook Power Automate
         const WEBHOOK_URL = 'https://default2fe73b7aa63e4370a1eb1915e8da07.55.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/b212eb456463411797b5b5f5f9edf53e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=-oLm1krIbljNiqXPqTH-9e-h7tYzXmlEv2ChX0-Hhd4';
         
         // Variables globales
@@ -719,6 +726,7 @@
         const selectedOperationType = document.getElementById('selectedOperationType');
         const changeOperationBtn = document.getElementById('changeOperationBtn');
         const startScanningBtn = document.getElementById('startScanningBtn');
+        const resetBtn = document.getElementById('resetBtn');
         
         // Éléments du DOM - Formulaire
         const peridInput = document.getElementById('peridInput');
@@ -898,6 +906,65 @@
         pitidInput.addEventListener('change', saveSessionData);
         addressInput.addEventListener('change', saveSessionData);
         initialCommentsInput.addEventListener('change', saveSessionData);
+        
+        // ===== RÉINITIALISATION =====
+        
+        resetBtn.addEventListener('click', async () => {
+            // Demander confirmation si des articles sont en attente
+            if (itemQueue.length > 0) {
+                const confirm = window.confirm(
+                    `⚠️ Attention !\n\n` +
+                    `Vous avez ${itemQueue.length} article(s) en attente qui n'ont pas été envoyés.\n\n` +
+                    `Voulez-vous vraiment recommencer et perdre ces données ?`
+                );
+                
+                if (!confirm) {
+                    return;
+                }
+            }
+            
+            // Arrêter le scan si en cours
+            await stopScanning();
+            
+            // Réinitialiser la file d'attente
+            itemQueue = [];
+            saveQueue();
+            updateQueueDisplay();
+            
+            // Réinitialiser les champs de formulaire
+            peridInput.value = '';
+            pitidInput.value = '';
+            addressInput.value = '';
+            initialCommentsInput.value = '';
+            barcodeInput.value = '';
+            quantityInput.value = '1';
+            notesInput.value = '';
+            
+            // Réinitialiser les variables
+            operationType = '';
+            scannedBarcode = '';
+            
+            // Nettoyer localStorage
+            localStorage.removeItem('operationType');
+            localStorage.removeItem('perid');
+            localStorage.removeItem('pitid');
+            localStorage.removeItem('address');
+            localStorage.removeItem('initialComments');
+            localStorage.removeItem('itemQueue');
+            
+            // Masquer toutes les sections
+            sessionFormSection.style.display = 'none';
+            scanningSection.style.display = 'none';
+            formSection.style.display = 'none';
+            scanResultZone.innerHTML = '';
+            
+            // Afficher l'écran de sélection
+            operationTypeSection.style.display = 'block';
+            
+            showMessage('✓ Réinitialisation effectuée. Sélectionnez un type d\'opération.', 'success');
+        });
+        
+        // ===== FIN RÉINITIALISATION =====
         
         // Afficher un message
         function showMessage(text, type = 'success') {
