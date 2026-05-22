@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scanner SharePoint</title>
+    <title>Scanner Signalisation ACN</title>
     
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#0F172A">
@@ -561,7 +561,7 @@
 <body>
     <div class="container">
         <header>
-            <h1>📦 Scanner la signalisation ACN</h1>
+            <h1>📦 Scanner Signalisation ACN</h1>
             <p class="subtitle">Scannez plusieurs articles puis envoyez-les tous en une fois</p>
         </header>
         
@@ -695,7 +695,7 @@
             
             <div class="queue-actions">
                 <button id="sendAllBtn" class="btn btn-primary">
-                    🚀 Tout envoyer à SharePoint
+                    🚀 Tout envoyer et clôturer
                 </button>
                 <button id="clearQueueBtn" class="btn btn-secondary">
                     🗑️ Vider la liste
@@ -1253,11 +1253,13 @@
                     body: JSON.stringify(batchData)
                 });
                 
-                // Lire la réponse
+                // Lire la réponse une seule fois
+                const contentType = response.headers.get('content-type');
                 let responseData;
-                try {
+                
+                if (contentType && contentType.includes('application/json')) {
                     responseData = await response.json();
-                } catch (e) {
+                } else {
                     responseData = await response.text();
                 }
                 
@@ -1274,9 +1276,9 @@
                     sendAllBtn.innerHTML = '🚀 Tout envoyer à SharePoint';
                 } else {
                     // Afficher l'erreur détaillée
-                    const errorMsg = responseData.error ? 
+                    const errorMsg = typeof responseData === 'object' && responseData.error ? 
                         `${responseData.error.code}: ${responseData.error.message}` : 
-                        JSON.stringify(responseData);
+                        responseData;
                     throw new Error(`Erreur HTTP ${response.status}: ${errorMsg}`);
                 }
                 
@@ -1340,10 +1342,13 @@
                 
                 console.log('Réponse reçue:', response.status, response.statusText);
                 
+                // Lire la réponse une seule fois
+                const contentType = response.headers.get('content-type');
                 let responseData;
-                try {
+                
+                if (contentType && contentType.includes('application/json')) {
                     responseData = await response.json();
-                } catch (e) {
+                } else {
                     responseData = await response.text();
                 }
                 
@@ -1352,9 +1357,9 @@
                 if (response.ok) {
                     showMessage('✅ Test réussi ! La connexion à Power Automate fonctionne.', 'success');
                 } else {
-                    const errorMsg = responseData.error ? 
+                    const errorMsg = typeof responseData === 'object' && responseData.error ? 
                         `${responseData.error.code}: ${responseData.error.message}` : 
-                        JSON.stringify(responseData);
+                        responseData;
                     showMessage(`❌ Test échoué (${response.status}): ${errorMsg}`, 'error');
                 }
                 
